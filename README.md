@@ -25,7 +25,7 @@ Agregamos la librería como dependencia
             dependencies {
                 //...otras dependencias de tu proyeco aquí.....
                 // librería JSONObject ejemplo compile 'org.json:json:20180130'
-                compile 'com.github.sbxcloud:sbxcloudjava:v1.0.1'
+                compile 'com.github.sbxcloud:sbxcloudjava:v1.0.x'
                 
             }
  Esta librería depende de org.json.JSONObject y se basa en annotaciones. Para crear tu propia Clase usuario puedes hacerla así:

@@ -3,7 +3,6 @@ package com.sbxcloud.java.sbxcloudsdk.query;
 import com.sbxcloud.java.sbxcloudsdk.auth.SbxAuth;
 import com.sbxcloud.java.sbxcloudsdk.exception.SbxAuthException;
 import com.sbxcloud.java.sbxcloudsdk.exception.SbxModelException;
-import com.sbxcloud.java.sbxcloudsdk.net.model.SbxQuery;
 import com.sbxcloud.java.sbxcloudsdk.query.annotation.SbxKey;
 import com.sbxcloud.java.sbxcloudsdk.query.annotation.SbxModelName;
 import com.sbxcloud.java.sbxcloudsdk.query.annotation.SbxParamField;

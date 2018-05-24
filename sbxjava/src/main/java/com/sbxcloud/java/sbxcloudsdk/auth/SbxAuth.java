@@ -1,8 +1,5 @@
 package com.sbxcloud.java.sbxcloudsdk.auth;
 
-import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
 
 import com.sbxcloud.java.sbxcloudsdk.auth.config.SbxAppKeyField;
 import com.sbxcloud.java.sbxcloudsdk.auth.config.SbxDomainField;
@@ -20,10 +17,6 @@ import org.json.JSONObject;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.net.URL;
-
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 
 /**
  * Created by lgguzman on 18/02/17.
@@ -37,8 +30,6 @@ public class SbxAuth {
     private  String appKey;
     private String token;
     private boolean HttpLog;
-    private Context context;
-    private SharedPreferences sharedPreferences;
     private static final String FILE_NAME=SbxAuth.class.getName();
     private static final String FILE_NAME_TOKEN=FILE_NAME+"_Token";
     private static final String FILE_NAME_DOMAIN=FILE_NAME+"_Domain";
@@ -53,42 +44,20 @@ public class SbxAuth {
     }
 
 
-    public Context getContext() {
-        return context;
-    }
 
     /**
      * initialize the data for comunicate on sbxcloud.com
      * @param domain the id of the domain on sbxcloud.com
      * @param appKey the app key on sbxcloud.com
      */
-    public static void initializeIfIsNecessary(Context context, int domain, String appKey) {
+    public static void initializeIfIsNecessary( int domain, String appKey) {
         if(defaultSbxAuth ==null) {
             defaultSbxAuth = new SbxAuth();
-            defaultSbxAuth.context = context;
             defaultSbxAuth.domain = domain;
             defaultSbxAuth.appKey = appKey;
-            defaultSbxAuth.sharedPreferences = context.getSharedPreferences(FILE_NAME,Context.MODE_PRIVATE);
-            defaultSbxAuth.sharedPreferences.edit().putString(FILE_NAME_APPKEY, defaultSbxAuth.appKey)
-                        .putInt(FILE_NAME_DOMAIN, defaultSbxAuth.domain).apply();
         }
     }
 
-    /**
-     *
-     * @param app
-     * @throws SbxConfigException
-     */
-    public static void initialize(Application app)throws SbxConfigException{
-        defaultSbxAuth = new SbxAuth();
-        defaultSbxAuth.context = app.getApplicationContext();
-        defaultSbxAuth.context=app.getApplicationContext();
-        defaultSbxAuth.domain=getDomainAnnotation(app);
-        defaultSbxAuth.appKey=getAppKeyAnnotation(app);
-        defaultSbxAuth.sharedPreferences = defaultSbxAuth.context.getSharedPreferences(FILE_NAME,Context.MODE_PRIVATE);
-        defaultSbxAuth.sharedPreferences.edit().putString(FILE_NAME_APPKEY, defaultSbxAuth.appKey)
-                .putInt(FILE_NAME_DOMAIN, defaultSbxAuth.domain).apply();
-    }
 
     /**
      *
@@ -107,12 +76,6 @@ public class SbxAuth {
      * @throws SbxConfigException
      */
     public int getDomain()throws SbxConfigException {
-        if(domain==0){
-            if(sharedPreferences==null)
-                throw new SbxConfigException("SbxAuth not initialized");
-            else
-                return domain = sharedPreferences.getInt(FILE_NAME_DOMAIN,0);
-        }
         return domain;
     }
 
@@ -122,11 +85,6 @@ public class SbxAuth {
      * @throws SbxConfigException
      */
     public String getToken()throws SbxConfigException {
-        if(token==null){
-            if (sharedPreferences.getString(FILE_NAME_TOKEN,"").isEmpty())
-                throw new SbxConfigException("User is not login yet.");
-            return token = sharedPreferences.getString(FILE_NAME_TOKEN,"");
-        }
         return token;
     }
 
@@ -136,20 +94,12 @@ public class SbxAuth {
      * @throws SbxConfigException
      */
     public String getAppKey()throws SbxConfigException{
-        if(appKey==null){
-            if(sharedPreferences==null)
-                throw new SbxConfigException("SbxAuth not initialized");
-            else
-                return appKey = sharedPreferences.getString(FILE_NAME_APPKEY,"");
-        }
         return appKey;
     }
 
 
     public void resetToken(){
         token=null;
-        if(sharedPreferences!=null)
-            sharedPreferences.edit().putString(FILE_NAME_TOKEN,"").apply();
     }
 
     /**
@@ -171,7 +121,6 @@ public class SbxAuth {
                     variable.setAccessible(true);
                     token= (String)variable.get(obj);
                     variable.setAccessible(isAccessible);
-                    sharedPreferences.edit().putString(FILE_NAME_TOKEN,token).apply();
                     return  token;
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     throw new SbxConfigException(e);

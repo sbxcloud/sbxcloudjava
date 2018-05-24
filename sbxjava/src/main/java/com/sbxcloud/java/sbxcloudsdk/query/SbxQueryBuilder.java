@@ -1,6 +1,6 @@
 package com.sbxcloud.java.sbxcloudsdk.query;
 
-import com.sbxcloud.java.sbxcloudsdk.net.model.SbxQuery;
+
 import com.sbxcloud.java.sbxcloudsdk.util.SbxDataValidator;
 
 import org.json.JSONArray;

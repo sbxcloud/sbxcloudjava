@@ -1,15 +1,19 @@
 package com.sbxcloud.java.sbxcloudsdk.util;
 
+import com.sbxcloud.java.sbxcloudsdk.callback.SbxArrayResponse;
 import com.sbxcloud.java.sbxcloudsdk.exception.SbxAuthException;
 import com.sbxcloud.java.sbxcloudsdk.exception.SbxModelException;
 import com.sbxcloud.java.sbxcloudsdk.query.annotation.SbxCreatedAt;
 import com.sbxcloud.java.sbxcloudsdk.query.annotation.SbxKey;
 import com.sbxcloud.java.sbxcloudsdk.query.annotation.SbxParamField;
+import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by lgguzman on 20/02/17.
@@ -18,7 +22,7 @@ import java.lang.reflect.Field;
 
 public class SbxMagicComposer {
 
-    public static Object getSbxModel(JSONObject jsonObject,  Class<?> clazz, int level)throws  Exception{
+    public static <T> T getSbxModel(JSONObject jsonObject,  Class<T> clazz, int level)throws  Exception{
         level++;
         //accept only two level
         if (level==4)
@@ -161,10 +165,10 @@ public class SbxMagicComposer {
         }
 
 
-        return o;
+        return (T)o;
     }
 
-    public static void getSbxModel(JSONObject jsonObject,  Class<?> clazz, Object o, int level)throws  Exception{
+    public static <T> void getSbxModel(JSONObject jsonObject,  Class<T> clazz, T o, int level)throws  Exception{
         level++;
         //accept only two level
         if (level==4)
@@ -308,7 +312,7 @@ public class SbxMagicComposer {
         return ;
     }
 
-    public static void getSbxModel(JSONObject jsonObject,  Class<?> clazz, Object o, int level, JSONObject fetches)throws  Exception{
+    public static <T> void getSbxModel(JSONObject jsonObject,  Class<?> clazz, T o, int level, JSONObject fetches)throws  Exception{
         level++;
         //accept only two level
         if (level==4)
@@ -463,7 +467,7 @@ public class SbxMagicComposer {
         return ;
     }
 
-    public static Object getSbxModel(JSONObject jsonObject,  Class<?> clazz, int level, JSONObject fetches)throws  Exception{
+    public static <T> T getSbxModel(JSONObject jsonObject,  Class<T> clazz, int level, JSONObject fetches)throws  Exception{
         level++;
         //accept only two level
         if (level==4)
@@ -622,7 +626,33 @@ public class SbxMagicComposer {
         }
 
 
-        return o;
+        return (T)o;
+    }
+
+    public <T> void getSbxArrayResponse(final SbxArrayResponse<T> sbxArrayResponse, JSONObject response) throws Exception{
+
+        try{
+            if(response.getBoolean("success")) {
+
+                List<T> list= new ArrayList<T>();
+                JSONArray jsonArray=response.getJSONArray("results");
+                for (int i=0;i<jsonArray.length();i++){
+                    if(response.has("fetched_results")) {
+                        list.add(SbxMagicComposer.getSbxModel(jsonArray.getJSONObject(i), (Class<T>) ((ParameterizedType)sbxArrayResponse.getClass()
+                                .getGenericSuperclass()).getActualTypeArguments()[0], 0,response.getJSONObject("fetched_results")));
+                    }else{
+                        list.add(SbxMagicComposer.getSbxModel(jsonArray.getJSONObject(i), (Class<T>) ((ParameterizedType)sbxArrayResponse.getClass()
+                                .getGenericSuperclass()).getActualTypeArguments()[0], 0));
+                    }
+                }
+                sbxArrayResponse.onSuccess(list);
+
+            }else{
+                sbxArrayResponse.onError(new Exception(response.getString("error")));
+            }
+        }catch (Exception e) {
+            sbxArrayResponse.onError(e);
+        }
     }
 }
 

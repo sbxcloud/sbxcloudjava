@@ -24,24 +24,17 @@ import java.lang.reflect.Field;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class SbxAuth {
 
-
-    private static SbxAuth defaultSbxAuth;
-    private  int domain;
-    private  String appKey;
-    private String token;
-    private boolean HttpLog;
     private static final String FILE_NAME=SbxAuth.class.getName();
     private static final String FILE_NAME_TOKEN=FILE_NAME+"_Token";
     private static final String FILE_NAME_DOMAIN=FILE_NAME+"_Domain";
     private static final String FILE_NAME_APPKEY=FILE_NAME+"_Appkey";
+    private static SbxAuth defaultSbxAuth;
+    private  int domain;
+    private  String appKey;
+    private String token;
+    private SbxAuthPersistenceStrategy sbxAuthPersistenceStrategy;
+    private boolean HttpLog;
 
-    public boolean isHttpLog() {
-        return HttpLog;
-    }
-
-    public void setHttpLog(boolean httpLog) {
-        HttpLog = httpLog;
-    }
 
 
 
@@ -58,6 +51,42 @@ public class SbxAuth {
         }
     }
 
+    /**
+     * initialize the data for comunicate on sbxcloud.com
+     * @param domain the id of the domain on sbxcloud.com
+     * @param appKey the app key on sbxcloud.com
+     */
+    public static void initializeIfIsNecessary( int domain, String appKey, SbxAuthPersistenceStrategy sbxAuthPersistenceStrategy) {
+        if(defaultSbxAuth ==null) {
+            defaultSbxAuth = new SbxAuth();
+            defaultSbxAuth.domain = domain;
+            defaultSbxAuth.appKey = appKey;
+            defaultSbxAuth.setSbxAuthPersistenceStrategy(sbxAuthPersistenceStrategy);
+            defaultSbxAuth.getSbxAuthPersistenceStrategy().setDomain(domain);
+            defaultSbxAuth.getSbxAuthPersistenceStrategy().setAppKey(appKey);
+        }
+    }
+
+    public boolean isHttpLog() {
+        return HttpLog;
+    }
+
+
+    public void setHttpLog(boolean httpLog) {
+        HttpLog = httpLog;
+    }
+
+    /**
+     * set a persistence strategy
+     * @param sbxAuthPersistenceStrategy
+     */
+    public void setSbxAuthPersistenceStrategy(SbxAuthPersistenceStrategy sbxAuthPersistenceStrategy){
+        this.sbxAuthPersistenceStrategy =sbxAuthPersistenceStrategy;
+    }
+
+    public SbxAuthPersistenceStrategy getSbxAuthPersistenceStrategy(){
+        return sbxAuthPersistenceStrategy;
+    }
 
     /**
      *
@@ -75,7 +104,28 @@ public class SbxAuth {
      * @return
      * @throws SbxConfigException
      */
+    public static SbxAuth getDefaultSbxAuth(SbxAuthPersistenceStrategy sbxAuthPersistenceStrategy)throws SbxConfigException {
+        if(defaultSbxAuth==null )
+            if (sbxAuthPersistenceStrategy==null)
+                throw  new SbxConfigException("SbxAuth not initialized");
+            else
+                SbxAuth.initializeIfIsNecessary(sbxAuthPersistenceStrategy.getDomain(),
+                        sbxAuthPersistenceStrategy.getAppKey(), sbxAuthPersistenceStrategy);
+        return defaultSbxAuth;
+    }
+
+    /**
+     *
+     * @return
+     * @throws SbxConfigException
+     */
     public int getDomain()throws SbxConfigException {
+        if(domain==0){
+            if(sbxAuthPersistenceStrategy==null)
+                throw new SbxConfigException("SbxAuth not initialized");
+            else
+                return domain = sbxAuthPersistenceStrategy.getDomain();
+        }
         return domain;
     }
 
@@ -85,6 +135,11 @@ public class SbxAuth {
      * @throws SbxConfigException
      */
     public String getToken()throws SbxConfigException {
+        if(token==null){
+            if (sbxAuthPersistenceStrategy==null || sbxAuthPersistenceStrategy.getToken().equals(""))
+                throw new SbxConfigException("User is not login yet.");
+            return token = sbxAuthPersistenceStrategy.getToken();
+        }
         return token;
     }
 
@@ -94,11 +149,20 @@ public class SbxAuth {
      * @throws SbxConfigException
      */
     public String getAppKey()throws SbxConfigException{
+        if(appKey==null){
+            if(sbxAuthPersistenceStrategy==null)
+                throw new SbxConfigException("SbxAuth not initialized");
+            else
+                return appKey = sbxAuthPersistenceStrategy.getAppKey();
+        }
         return appKey;
     }
 
 
     public void resetToken(){
+        if(sbxAuthPersistenceStrategy!=null){
+            sbxAuthPersistenceStrategy.setToken("");
+        }
         token=null;
     }
 
@@ -121,6 +185,9 @@ public class SbxAuth {
                     variable.setAccessible(true);
                     token= (String)variable.get(obj);
                     variable.setAccessible(isAccessible);
+                    if(sbxAuthPersistenceStrategy!=null){
+                        sbxAuthPersistenceStrategy.setToken(token);
+                    }
                     return  token;
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     throw new SbxConfigException(e);

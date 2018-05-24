@@ -1,16 +1,16 @@
-# androidlib
-## **SbxCloud** Android SDK
+# sbxcloud Java
+## **SbxCloud** Java SDK
 
 
 
-El propósito de esta librería es facilitar el desarrollo de aplicaciones android con **SbxCloud**
+El propósito de esta librería es facilitar el desarrollo de aplicaciones Java con **SbxCloud**
 
 
 
 Si tienes alguna duda te invitamos a participar de nuestro canal de slack, simplemente ingresa a: https://archivodigitalslack.herokuapp.com y pide tu invitación, allí encontrarás personas que como tú están desarrollando sus soluciones con nuestra plataforma.
 
 
-Para comenzar a usar el SDK de Android, simplemente debemos de agregar la siguientes líneas a nuestra configuración de gradle(build.gradle):
+Para comenzar a usar el SDK de Java, simplemente debemos de agregar la siguientes líneas a nuestra configuración de gradle(build.gradle):
 
 Agregamos jitpack.io como repositorio
 

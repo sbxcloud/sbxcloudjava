@@ -24,10 +24,11 @@ Agregamos la librería como dependencia
 
             dependencies {
                 //...otras dependencias de tu proyeco aquí.....
+                // librería JSONObject ejemplo compile 'org.json:json:20180130'
                 compile 'com.github.sbxcloud:sbxcloudjava:v1.0.1'
+                
             }
-
-Esta librería se basa en annotaciones. Para crear tu propia Clase usuario puedes hacerla así:
+ Esta librería depende de org.json.JSONObject y se basa en annotaciones. Para crear tu propia Clase usuario puedes hacerla así:
 ```java
 public class User {
     @SbxNameField
@@ -114,8 +115,8 @@ Luego, puedes conectarte con tus datos utilizando el cliente hhtp que consideres
 ```java
 public class Main {
     public static void main() {
-                //Iniciar la librería con el dominio y el App-key, puede ser en tu custom Application.class
-                 SbxAuth.initializeIfIsNecessary(Context,110,"d4cd3cac-043a-48ab-9d06-18aa4fd23cbd");
+                //Iniciar la librería con el dominio y el App-key
+                 SbxAuth.initializeIfIsNecessary(110,"d4cd3cac-043a-48ab-9d06-18aa4fd23cbd");
         
                 //Datos
                 //Registrar un usuario

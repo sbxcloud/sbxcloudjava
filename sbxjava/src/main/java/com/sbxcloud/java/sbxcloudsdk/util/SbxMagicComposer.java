@@ -168,8 +168,9 @@ public class SbxMagicComposer {
         return (T)o;
     }
 
-    public static <T> void getSbxModel(JSONObject jsonObject,  Class<T> clazz, T o, int level)throws  Exception{
+    public static <T> void getSbxModel(JSONObject jsonObject,  T o, int level)throws  Exception{
         level++;
+        Class<?> clazz = o.getClass();
         //accept only two level
         if (level==4)
             return ;
@@ -312,7 +313,8 @@ public class SbxMagicComposer {
         return ;
     }
 
-    public static <T> void getSbxModel(JSONObject jsonObject,  Class<?> clazz, T o, int level, JSONObject fetches)throws  Exception{
+    public static <T> void getSbxModel(JSONObject jsonObject,  T o, int level, JSONObject fetches)throws  Exception{
+        Class<?> clazz = o.getClass();
         level++;
         //accept only two level
         if (level==4)

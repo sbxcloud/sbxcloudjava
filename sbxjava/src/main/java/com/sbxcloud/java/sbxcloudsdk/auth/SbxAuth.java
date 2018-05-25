@@ -1,6 +1,8 @@
 package com.sbxcloud.java.sbxcloudsdk.auth;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sbxcloud.java.sbxcloudsdk.auth.config.SbxAppKeyField;
 import com.sbxcloud.java.sbxcloudsdk.auth.config.SbxDomainField;
 import com.sbxcloud.java.sbxcloudsdk.auth.user.SbxAuthToken;
@@ -444,7 +446,8 @@ public class SbxAuth {
                 UrlHelper.PASSWORD_REQUEST
                 , UrlHelper.POST
         );
-        JSONObject jsonObject = new JSONObject();
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode jsonObject  = mapper.createObjectNode();
         jsonObject.put("domain", domain);
         jsonObject.put("email_template", emailTemplate);
         jsonObject.put("subject", subject);
@@ -466,7 +469,8 @@ public class SbxAuth {
                 UrlHelper.PASSWORD_REQUEST
                 , UrlHelper.PUT
         );
-        JSONObject jsonObject = new JSONObject();
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode jsonObject  = mapper.createObjectNode();
         jsonObject.put("domain", domain);
         jsonObject.put("user_id", userId);
         jsonObject.put("code", code);

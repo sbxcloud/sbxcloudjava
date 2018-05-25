@@ -1,5 +1,7 @@
 package com.sbxcloud.java.sbxcloudsdk.push;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sbxcloud.java.sbxcloudsdk.auth.SbxAuth;
 import com.sbxcloud.java.sbxcloudsdk.util.SbxJsonModeler;
 import com.sbxcloud.java.sbxcloudsdk.util.SbxUrlComposer;
@@ -23,7 +25,9 @@ public class SbxPushHelper {
                 UrlHelper.PUSH
                 , UrlHelper.POST
         );
-        JSONObject jsonObject = new JSONObject();
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode jsonObject  = mapper.createObjectNode();
         jsonObject.put("domain", domain);
         jsonObject.put("message", message);
         jsonObject.put("title", title);

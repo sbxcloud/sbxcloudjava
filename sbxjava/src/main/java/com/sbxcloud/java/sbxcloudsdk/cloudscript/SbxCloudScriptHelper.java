@@ -1,5 +1,7 @@
 package com.sbxcloud.java.sbxcloudsdk.cloudscript;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sbxcloud.java.sbxcloudsdk.auth.SbxAuth;
 import com.sbxcloud.java.sbxcloudsdk.query.SbxQueryBuilder;
 import com.sbxcloud.java.sbxcloudsdk.util.SbxUrlComposer;
@@ -20,16 +22,17 @@ public class SbxCloudScriptHelper {
      * @return
      * @throws Exception
      */
-    public static SbxUrlComposer getUrlRunCloudScript(String key, JSONObject params)throws Exception {
+    public static SbxUrlComposer getUrlRunCloudScript(String key, ObjectNode params)throws Exception {
 
        // int domain = SbxAuth.getDefaultSbxAuth().getDomain();
         String appKey = SbxAuth.getDefaultSbxAuth().getAppKey();
         String token = SbxAuth.getDefaultSbxAuth().getToken();
         SbxUrlComposer sbxUrlComposer = new SbxUrlComposer( UrlHelper.CLOUDSCRIPT_RUN, UrlHelper.POST);
-        JSONObject jsonObject = new JSONObject();
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode jsonObject  = mapper.createObjectNode();
         try{
             jsonObject.put("key",key);
-            jsonObject.put("params",params);
+            jsonObject.set("params",params);
         }catch (Exception ex){}
         return sbxUrlComposer
                 .addHeader(UrlHelper.HEADER_KEY_APP_KEY, appKey)

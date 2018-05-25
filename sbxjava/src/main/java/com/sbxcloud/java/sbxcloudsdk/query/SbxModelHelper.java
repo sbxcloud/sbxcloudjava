@@ -1,11 +1,13 @@
 package com.sbxcloud.java.sbxcloudsdk.query;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sbxcloud.java.sbxcloudsdk.auth.SbxAuth;
 import com.sbxcloud.java.sbxcloudsdk.exception.SbxAuthException;
 import com.sbxcloud.java.sbxcloudsdk.exception.SbxModelException;
 import com.sbxcloud.java.sbxcloudsdk.query.annotation.SbxKey;
 import com.sbxcloud.java.sbxcloudsdk.query.annotation.SbxModelName;
 import com.sbxcloud.java.sbxcloudsdk.query.annotation.SbxParamField;
+import com.sbxcloud.java.sbxcloudsdk.query.annotation.SbxReference;
 import com.sbxcloud.java.sbxcloudsdk.util.SbxDataValidator;
 import com.sbxcloud.java.sbxcloudsdk.util.SbxUrlComposer;
 import com.sbxcloud.java.sbxcloudsdk.util.UrlHelper;
@@ -21,6 +23,9 @@ import java.util.Objects;
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class SbxModelHelper {
+// @JsonInclude(JsonInclude.Include.NON_NULL)
+    // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+
 
     public static <T>SbxUrlComposer getUrlInsertOrUpdateRows(List<T> objects)throws Exception {
 
@@ -29,10 +34,9 @@ public class SbxModelHelper {
         int domain = SbxAuth.getDefaultSbxAuth().getDomain();
         String appKey = SbxAuth.getDefaultSbxAuth().getAppKey();
         String token = SbxAuth.getDefaultSbxAuth().getToken();
-        String key=null;
 
         Object of=objects.get(0);
-        key=getKeyFromAnnotation(of);
+
         Class<?> myClass = of.getClass();
         if(!SbxDataValidator.hasKeyAnnotation(myClass)){
             throw new SbxModelException("SbxKey is required");
@@ -45,124 +49,18 @@ public class SbxModelHelper {
         }else{
             throw  new SbxModelException("SbxModelName is required");
         }
-
-        SbxUrlComposer sbxUrlComposer = new SbxUrlComposer(
-                key==null||key.equals("")? UrlHelper.URL_INSERT:UrlHelper.URL_UPDATE
-                , UrlHelper.POST
-        );
         SbxQueryBuilder queryBuilder = new SbxQueryBuilder(domain, modelName, SbxQueryBuilder.TYPE.INSERT);
 
+        queryBuilder.insert(of);
+        SbxUrlComposer sbxUrlComposer = new SbxUrlComposer(
+                queryBuilder.isInsert()? UrlHelper.URL_INSERT:UrlHelper.URL_UPDATE
+                , UrlHelper.POST
+        );
 
-        for(Object o: objects) {
-
-            key=getKeyFromAnnotation(o);
-            queryBuilder.insertNewEmptyRow();
-            if (!(key == null || key.equals("")))
-                queryBuilder.insertFieldLastRow("_KEY", key);
-            final Field[] variables = myClass.getDeclaredFields();
-
-            for (final Field variable : variables) {
-
-                final Annotation annotation = variable.getAnnotation(SbxParamField.class);
-
-                if (annotation != null && annotation instanceof SbxParamField) {
-                    try {
-                        boolean isAccessible = variable.isAccessible();
-                        variable.setAccessible(true);
-                        String name = SbxDataValidator.getAnnotationName(variable, annotation);
-                        String variabletype = variable.getGenericType().toString();
-                        switch (variabletype) {
-                            case "class java.lang.String": {
-                                Object os = variable.get(o);
-                                if (os != null) {
-                                    String data = (String) os;
-                                    queryBuilder.insertFieldLastRow(name, data);
-                                }
-                                break;
-                            }
-                            case "int": {
-                                int data = variable.getInt(o);
-                                if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                    queryBuilder.insertFieldLastRow(name, data);
-                                break;
-                            }
-                            case "class java.lang.Integer": {
-                                int data = variable.getInt(o);
-                                if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                    queryBuilder.insertFieldLastRow(name, data);
-                                break;
-                            }
-                            case "long": {
-                                long data = variable.getLong(o);
-                                if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                    queryBuilder.insertFieldLastRow(name, data);
-                                break;
-                            }
-                            case "class java.lang.Long": {
-                                long data = variable.getLong(o);
-                                if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                    queryBuilder.insertFieldLastRow(name, data);
-                                break;
-                            }
-                            case "double": {
-                                double data = variable.getDouble(o);
-                                if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                    queryBuilder.insertFieldLastRow(name, data);
-                                break;
-                            }
-                            case "class java.lang.Double": {
-                                double data = variable.getDouble(o);
-                                if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                    queryBuilder.insertFieldLastRow(name, data);
-                                break;
-                            }
-                            case "float": {
-                                float data = variable.getFloat(o);
-                                if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                    queryBuilder.insertFieldLastRow(name, data);
-                                break;
-                            }
-                            case "class java.lang.Float": {
-                                float data = variable.getFloat(o);
-                                if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                    queryBuilder.insertFieldLastRow(name, data);
-                                break;
-                            }
-                            case "class java.util.Date": {
-                                Object os = variable.get(o);
-                                if (os != null) {
-                                    Date data = (Date) os;
-                                    queryBuilder.insertFieldLastRow(name, data);
-                                }
-                                break;
-                            }
-                            case "boolean": {
-                                boolean data = variable.getBoolean(o);
-                                if(SbxDataValidator.saveDefaultValue(annotation) || data)
-                                    queryBuilder.insertFieldLastRow(name, data);
-                                break;
-                            }
-                            default: {
-                                Object os = variable.get(o);
-                                if (os != null) {
-                                    queryBuilder.insertFieldLastRow(name, getKeyFromAnnotation(os));
-                                }
-                                break;
-                            }
-
-
-                        }
-
-                        variable.setAccessible(isAccessible);
-                    } catch (IllegalArgumentException | IllegalAccessException e) {
-                        throw new SbxAuthException(e);
-                    }
-
-                }
-
-
-            }
+        for (int i=1; i<objects.size(); i=i+1){
+            queryBuilder.insert(objects.get(i));
         }
+
 
         return sbxUrlComposer
                 .addHeader(UrlHelper.HEADER_KEY_APP_KEY, appKey)
@@ -191,121 +89,12 @@ public class SbxModelHelper {
             throw  new SbxModelException("SbxModelName is required");
         }
 
-        key=getKeyFromAnnotation(o);
+        SbxQueryBuilder queryBuilder = new SbxQueryBuilder(domain, modelName, SbxQueryBuilder.TYPE.INSERT);
+        queryBuilder.insert(o);
         SbxUrlComposer sbxUrlComposer = new SbxUrlComposer(
-                key==null||key.equals("")? UrlHelper.URL_INSERT:UrlHelper.URL_UPDATE
+                queryBuilder.isInsert()? UrlHelper.URL_INSERT:UrlHelper.URL_UPDATE
                 , UrlHelper.POST
         );
-
-        SbxQueryBuilder queryBuilder = new SbxQueryBuilder(domain, modelName, SbxQueryBuilder.TYPE.INSERT);
-
-        queryBuilder.insertNewEmptyRow();
-        if(!(key==null||key.equals("")))
-            queryBuilder.insertFieldLastRow("_KEY",key);
-        final Field[] variables = myClass.getDeclaredFields();
-
-        for (final Field variable : variables) {
-
-            final Annotation annotation = variable.getAnnotation(SbxParamField.class);
-
-            if (annotation != null && annotation instanceof SbxParamField) {
-                try {
-                    boolean isAccessible=variable.isAccessible();
-                    variable.setAccessible(true);
-                    String name= SbxDataValidator.getAnnotationName(variable,annotation);
-                    String variabletype=variable.getGenericType().toString();
-                    switch (variabletype){
-                        case "class java.lang.String":{
-                            Object os=variable.get(o);
-                            if(os!=null) {
-                                String data = (String) os;
-                                queryBuilder.insertFieldLastRow(name, data);
-                            }
-                            break;
-                        }
-                        case "int":{
-                            int data=variable.getInt(o);
-                            if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                queryBuilder.insertFieldLastRow(name,data);
-                            break;
-                        }
-                        case "class java.lang.Integer": {
-                            int data = variable.getInt(o);
-                            if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                queryBuilder.insertFieldLastRow(name, data);
-                            break;
-                        }
-                        case "long": {
-                            long data = variable.getLong(o);
-                            if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                queryBuilder.insertFieldLastRow(name, data);
-                            break;
-                        }
-                        case "class java.lang.Long": {
-                            long data = variable.getLong(o);
-                            if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                queryBuilder.insertFieldLastRow(name, data);
-                            break;
-                        }
-                        case "double": {
-                            double data = variable.getDouble(o);
-                            if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                queryBuilder.insertFieldLastRow(name, data);
-                            break;
-                        }
-                        case "class java.lang.Double": {
-                            double data = variable.getDouble(o);
-                            if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                queryBuilder.insertFieldLastRow(name, data);
-                            break;
-                        }
-                        case "float": {
-                            float data = variable.getFloat(o);
-                            if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                queryBuilder.insertFieldLastRow(name, data);
-                            break;
-                        }
-                        case "class java.lang.Float": {
-                            float data = variable.getFloat(o);
-                            if(SbxDataValidator.saveDefaultValue(annotation) || data!=0)
-                                queryBuilder.insertFieldLastRow(name, data);
-                            break;
-                        }
-                        case "class java.util.Date":{
-                            Object os=variable.get(o);
-                            if(os!=null) {
-                                Date data = (Date) os;
-                                queryBuilder.insertFieldLastRow(name, data);
-                            }
-                            break;
-                        }
-                        case "boolean":{
-                            boolean data=variable.getBoolean(o);
-                            if(SbxDataValidator.saveDefaultValue(annotation) || data)
-                                queryBuilder.insertFieldLastRow(name,data);
-                            break;
-                        }
-                        default:{
-                            Object os=variable.get(o);
-                            if(os!=null) {
-                                queryBuilder.insertFieldLastRow(name, getKeyFromAnnotation(os));
-                            }
-                            break;
-                        }
-
-
-                    }
-
-                    variable.setAccessible(isAccessible);
-                } catch (IllegalArgumentException | IllegalAccessException e) {
-                    throw new SbxAuthException(e);
-                }
-
-            }
-
-
-        }
-
         return sbxUrlComposer
                 .addHeader(UrlHelper.HEADER_KEY_APP_KEY, appKey)
                 //       .addHeader(UrlHelper.HEADER_KEY_ENCODING, UrlHelper.HEADER_GZIP)

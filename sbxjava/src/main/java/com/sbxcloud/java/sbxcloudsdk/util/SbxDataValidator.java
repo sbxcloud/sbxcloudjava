@@ -1,5 +1,6 @@
 package com.sbxcloud.java.sbxcloudsdk.util;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sbxcloud.java.sbxcloudsdk.exception.SbxAuthException;
 import com.sbxcloud.java.sbxcloudsdk.exception.SbxModelException;
 import com.sbxcloud.java.sbxcloudsdk.query.annotation.SbxKey;
@@ -28,6 +29,74 @@ public class SbxDataValidator {
         }
 
         return o;
+    }
+
+    public static void putInJsonObject(ObjectNode jsonObject, String field ,Object o){
+        switch (o.getClass().getName()) {
+            case "class java.lang.String": {
+                String data = (String) o;
+                jsonObject.put(field, data);
+                break;
+            }
+            case "int": {
+                int data = (int)o;
+                jsonObject.put(field, data);
+                break;
+            }
+            case "class java.lang.Integer": {
+                Integer data = (Integer) o;
+                jsonObject.put(field, data);
+            }
+            case "long": {
+                long data = (long) o;
+                jsonObject.put(field, data);
+                break;
+            }
+            case "class java.lang.Long": {
+                Long data = (Long) o;
+                jsonObject.put(field, data);
+                break;
+            }
+            case "double": {
+                double data = (double) o;
+                jsonObject.put(field, data);
+                break;
+            }
+            case "class java.lang.Double": {
+                Double data = (Double) o;
+                jsonObject.put(field, data);
+                break;
+            }
+            case "float": {
+                float data = (float) o;
+                jsonObject.put(field, data);
+                break;
+            }
+            case "class java.lang.Float": {
+                Float data = (Float) o;
+                jsonObject.put(field, data);
+                break;
+            }
+            case "class java.util.Date": {
+                Date data = (Date) o;
+                DateFormat jsonDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+                jsonDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                jsonObject.put(field, jsonDateFormat.format(data));
+                break;
+            }
+            case "boolean": {
+                boolean data = (boolean) o;
+                jsonObject.put(field, data);
+                break;
+            }
+            case  "class java.lang.Boolean": {
+                Boolean data = (Boolean) o;
+                jsonObject.put(field, data);
+                break;
+            }
+
+
+        }
     }
 
     public static Date getDate(String o) throws Exception{

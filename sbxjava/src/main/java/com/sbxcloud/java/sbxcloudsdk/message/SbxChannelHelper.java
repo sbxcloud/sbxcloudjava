@@ -1,5 +1,8 @@
 package com.sbxcloud.java.sbxcloudsdk.message;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sbxcloud.java.sbxcloudsdk.auth.SbxAuth;
 import com.sbxcloud.java.sbxcloudsdk.query.SbxQueryBuilder;
 import com.sbxcloud.java.sbxcloudsdk.util.SbxJsonModeler;
@@ -22,7 +25,8 @@ public class SbxChannelHelper {
                 UrlHelper.MESSAGE_CHANNEL
                 , UrlHelper.POST
         );
-        JSONObject jsonObject = new JSONObject();
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode jsonObject  = mapper.createObjectNode();
         jsonObject.put("name", channelName);
         return sbxUrlComposer
                 .addHeader(UrlHelper.HEADER_KEY_APP_KEY, appKey)
@@ -39,13 +43,14 @@ public class SbxChannelHelper {
                 UrlHelper.MESSAGE_CHANNEL_MEMBER
                 , UrlHelper.POST
         );
-        JSONObject jsonObject = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode jsonObject  = mapper.createObjectNode();
+        ArrayNode jsonArray = mapper.createArrayNode();
         for (int i=0;i<idUsers.length;i++){
-            jsonArray.put(idUsers[i]);
+            jsonArray.add(idUsers[i]);
         }
         jsonObject.put("channel_id", channelId);
-        jsonObject.put("members", jsonArray);
+        jsonObject.set("members", jsonArray);
         return sbxUrlComposer
                 .addHeader(UrlHelper.HEADER_KEY_APP_KEY, appKey)
 //                .addHeader(UrlHelper.HEADER_KEY_ENCODING, UrlHelper.HEADER_GZIP)
@@ -78,9 +83,10 @@ public class SbxChannelHelper {
                 , UrlHelper.POST
         );
 
-        JSONObject jsonObject = new JSONObject();
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode jsonObject  = mapper.createObjectNode();
         jsonObject.put("channel_id", channelId);
-        jsonObject.put("body", body.toJson());
+        jsonObject.set("body", body.toJson());
         return sbxUrlComposer
                 .addHeader(UrlHelper.HEADER_KEY_APP_KEY, appKey)
 //                .addHeader(UrlHelper.HEADER_KEY_ENCODING, UrlHelper.HEADER_GZIP)

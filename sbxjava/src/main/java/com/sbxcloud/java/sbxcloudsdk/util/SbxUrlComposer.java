@@ -1,14 +1,11 @@
 package com.sbxcloud.java.sbxcloudsdk.util;
 
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.File;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Created by lgguzman on 18/02/17.
@@ -18,7 +15,7 @@ public class SbxUrlComposer {
     private String url;
     private String type;
     private HashMap<String,String> header;
-    private JSONObject body;
+    private ObjectNode body;
     private File file;
     private String fileName;
     private String fileModel;
@@ -77,7 +74,7 @@ public class SbxUrlComposer {
         this.type=type;
         header= new HashMap<>();
         addHeader("User-Agent","AndroidALib");
-        body= new JSONObject();
+        body= (new ObjectMapper()).createObjectNode();
     }
 
 
@@ -108,10 +105,10 @@ public class SbxUrlComposer {
 
     /**
      *
-     * @param jsonObject
+     * @param body
      */
-    public SbxUrlComposer addBody(JSONObject jsonObject){
-        body = jsonObject;
+    public SbxUrlComposer addBody(ObjectNode body){
+        this.body = body;
         return this;
     }
 
@@ -139,7 +136,7 @@ public class SbxUrlComposer {
         return stringBuilder.toString();
     }
 
-    public JSONObject getBody() {
+    public ObjectNode getBody() {
         return body;
     }
 

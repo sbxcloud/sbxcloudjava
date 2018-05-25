@@ -1,6 +1,7 @@
 package com.sbxcloud.java.sbxcloudsdk.util;
 
-import org.json.JSONObject;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Created by lgguzman on 24/03/17.
@@ -8,8 +9,8 @@ import org.json.JSONObject;
 
 public interface SbxJsonModeler {
 
-    void wrapFromJson(JSONObject jsonObject);
+    void wrapFromJson(ObjectNode jsonObject);
 
-    JSONObject toJson();
+    ObjectNode toJson();
 
 }

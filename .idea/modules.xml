@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/javalib.iml" filepath="$PROJECT_DIR$/javalib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sbxcloudjava.iml" filepath="$PROJECT_DIR$/.idea/modules/sbxcloudjava.iml" group="sbxcloudjava" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sbxjava/sbxjava.iml" filepath="$PROJECT_DIR$/.idea/modules/sbxjava/sbxjava.iml" group="sbxcloudjava/sbxjava" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/sbxjava/sbxjava.iml" filepath="$PROJECT_DIR$/.idea/modules/sbxjava/sbxjava.iml" />
     </modules>
   </component>
